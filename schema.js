@@ -99,10 +99,78 @@ let MutationAdd = {
     }
 }
 
+let MutationDelete = {
+    type: UserType,
+    description: 'delete a user',
+    args: {
+        id: {
+            id: 'id dari user',
+            type: new GraphQLNonNull(GraphQLString)
+        }
+    },
+    resolve: (root, args) => {
+
+        return new Promise((resolve, reject) => {
+            User.findOneAndRemove({
+                id: args.id
+            }, (err, data) => {
+                if (err) {
+                    reject(err)
+                }
+                else {
+                    resolve(data)
+                }
+            })
+        })
+    }
+}
+
+let MutationUpdate = {
+    type: UserType,
+    description: 'update a user',
+    args: {
+        id: {
+            id: 'id dari user',
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        name: {
+            name: 'nama dari user',
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        age: {
+            name: 'umur dari user',
+            type: GraphQLInt
+        }
+    },
+    resolve: (root, args) => {
+
+        return new Promise((resolve, reject) => {
+            User.findOneAndUpdate({
+                id: args.id
+            }, {
+                name: args.name,
+                age: args.age
+            }, {
+                new: true,
+                upsert: false
+            }, (err, data) => {
+                if (err) {
+                    reject(err)
+                }
+                else {
+                    resolve(data)
+                }
+            })
+        })
+    }
+}
+
 let MutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
-        add: MutationAdd
+        add: MutationAdd,
+        delete: MutationDelete,
+        update: MutationUpdate
     }
 })
 
